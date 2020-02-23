@@ -21,7 +21,6 @@ b2 = [0.48]
 
 input = 1;
 target = (1 + sin(pi/4))
-alpha = 0.1
 
 %------ Now Propagate Forwards ------%
 
@@ -56,10 +55,6 @@ s1 = F1n1 * W2' * s2
 %------ Update Weights and Biases ------%
 
 W2 = W2 - (alpha * s2 * a1')
-b2 = b2 - (alpha * s2)
-
-W1 = W1 - (alpha * s1 * input')
-b1 = b1 - (alpha * s1)
 
 mse = error^2;
 end
