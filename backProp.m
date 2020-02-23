@@ -12,9 +12,9 @@ function [W1, b1, W2, b2] = backProp(trainInputs, trainTargets, learningRate, it
 %   layer1 function: logsigmoid()
 %   layer2 function: linear() 
 
-hiddenLayer = 3;
+hiddenLayer = 7;
 
-[outR outC] = size(trainTargets)
+[outR outC] = size(trainTargets);
 outputRows = outR;
 
 %   Initial Weights and biases 
@@ -27,7 +27,7 @@ for m = 1:hiddenLayer
     end
 end
 
-disp(W1)
+%disp(W1)
 
 %disp(b1)
 
@@ -42,8 +42,8 @@ for m = 1:outputRows
     end
 end
 
-disp(W2)
-disp(b2)
+%disp(W2)
+%disp(b2)
 
 % Some test data 
 %W1 = [-0.27; -0.41]
@@ -59,22 +59,24 @@ MSE = 1;
 iters = 0;
 while( MSE > 0 && iters < iterations)
     for passes = 1:cols
-        input = trainInputs(:,passes)
-        target = trainTargets(:,passes)
+        input = trainInputs(:,passes);
+        %disp(input)
+        target = trainTargets(:,passes);
+        %disp(target)
            %------ Now Propagate Forwards ------%
 
         %product = (W1 * trainInputs + b1)
-        n = (W1 * input) + b1
+        n = (W1 * input) + b1;
         a1 = logSigmoid((W1 * input) + b1);
-        disp("A1 = ")
-        disp(a1)
+        %disp("A1 = ")
+        %disp(a1)
 
         a2 = logSigmoid((W2 * a1) + b2);
-        disp("A2 = ")
-        disp(a2)
+        %disp("A2 = ")
+        %disp(a2)
 
-        error = target - a2
-        MSE = mse(target, a2)
+        error = target - a2;
+        MSE = mse(target, a2);
         %------ Now Calculate Sensitivities and Backpropagate ------%
         F2n2 = zeros(outputRows, outputRows);
         for i = 1:outputRows
@@ -86,8 +88,8 @@ while( MSE > 0 && iters < iterations)
         end
 
         %f2n2 = logSigDeriv(a2)'
-        s2 = -2 * F2n2 * error
-        disp(s2)
+        s2 = -2 * F2n2 * error;
+        %disp(s2)
 
         F1n1 = zeros(hiddenLayer, hiddenLayer);
         [f1rows f1cols] = size(F1n1);
@@ -98,18 +100,18 @@ while( MSE > 0 && iters < iterations)
                 end
             end
         end
-        disp(F1n1)
+        %disp(F1n1)
 
-        s1 = F1n1 * W2' * s2
+        s1 = F1n1 * W2' * s2;
 
         %------ Update Weights and Biases ------%
-        disp(W2)
-        disp(b2)
-        W2 = W2 - (alpha * s2 * a1')
-        b2 = b2 - (alpha * s2)
+        %disp(W2)
+        %disp(b2)
+        W2 = W2 - (alpha * s2 * a1');
+        b2 = b2 - (alpha * s2);
 
-        W1 = W1 - (alpha * s1 * input')
-        b1 = b1 - (alpha * s1)
+        W1 = W1 - (alpha * s1 * input');
+        b1 = b1 - (alpha * s1);
         
         
     end
