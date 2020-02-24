@@ -12,7 +12,7 @@ function [W1, b1, W2, b2, mseValues] = backProp(trainInputs, trainTargets, learn
 %   layer1 function: logsigmoid()
 %   layer2 function: linear() 
 
-hiddenLayer = 28;
+hiddenLayer = 15;
 
 [outR outC] = size(trainTargets);
 outputRows = outR;
@@ -59,7 +59,7 @@ mseIter = 1; %just a start value for the while loop
 iters = 1; %iteration counter 
 mseValues = zeros(iterations, 1);
 
-while( mseIter > 0.005 && iters < iterations + 1)
+while( mseIter > 0.002 && iters < iterations + 1)
     mseIter = 0;
     for passes = 1:cols
         input = trainInputs(:,passes);
