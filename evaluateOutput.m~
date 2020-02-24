@@ -1,0 +1,20 @@
+function [targetOut] = evaluateOutput(inputV)
+%   This function takes in the vector output of the logsigmoid 2-layer 
+%   network and converts to integer classification based on the values 
+%   INPUT:
+%   inputV = vector of network output (from validation set)
+%   OUTPUT:
+%   targetOut = integer classification from 
+[rows cols] = size(inputV);
+largestIndex = 1;
+largestVal = inputV(1,1);
+for r = 1:rows
+    if(inputV(r, 1) > largestVal)
+        largestIndex = r;
+        largestVal = inputV(r,1);
+    end
+end
+targetOut = largestIndex - 1;
+    
+end
+
