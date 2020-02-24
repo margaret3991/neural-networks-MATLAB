@@ -1,4 +1,4 @@
-function [W1, b1, W2, b2] = backProp(trainInputs, trainTargets, learningRate, iterations, architecture)
+function [W1, b1, W2, b2, mseValues] = backProp(trainInputs, trainTargets, learningRate, iterations, architecture)
 %   ------- BACKPROPAGATION FUNCTION -------
 %   
 %   trainInputs = input vector for training set 
@@ -12,7 +12,7 @@ function [W1, b1, W2, b2] = backProp(trainInputs, trainTargets, learningRate, it
 %   layer1 function: logsigmoid()
 %   layer2 function: linear() 
 
-hiddenLayer = 50;
+hiddenLayer = 10;
 
 [outR outC] = size(trainTargets);
 outputRows = outR;
@@ -55,9 +55,12 @@ end
 %input = 1;
 %target = (1 + sin(pi/4))
 alpha = learningRate;
-MSE = 1; %just a start value for the while loop 
+mseIter = 1; %just a start value for the while loop 
 iters = 0; %iteration counter 
-while( MSE > 0 && iters < iterations)
+mseValues = zeros(iterations);
+
+while( mseIter > 0.00001 && iters < iterations)
+    mseIter = 0;
     for passes = 1:cols
         input = trainInputs(:,passes);
         %disp(input)
@@ -66,7 +69,7 @@ while( MSE > 0 && iters < iterations)
            %------ Now Propagate Forwards ------%
 
         %product = (W1 * trainInputs + b1)
-        n = (W1 * input) + b1;
+        %n = (W1 * input) + b1;
         a1 = logSigmoid((W1 * input) + b1);
         %disp("A1 = ")
         %disp(a1)
@@ -76,7 +79,8 @@ while( MSE > 0 && iters < iterations)
         %disp(a2)
 
         error = target - a2;
-        MSE = mse(target, a2);
+        mseIter = mseIter + mse(target, a2);
+        
         %------ Now Calculate Sensitivities and Backpropagate ------%
         F2n2 = zeros(outputRows, outputRows);
         for i = 1:outputRows
@@ -116,7 +120,8 @@ while( MSE > 0 && iters < iterations)
         
     end
     iters = iters + 1;
-    disp(MSE)
+    mseValues(iters) = mseIter;
+    disp(mseIter);
 end
 
 end
