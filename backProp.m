@@ -12,7 +12,7 @@ function [W1, b1, W2, b2, mseValues] = backProp(trainInputs, trainTargets, learn
 %   layer1 function: logsigmoid()
 %   layer2 function: linear() 
 
-hiddenLayer = 10;
+hiddenLayer = 28;
 
 [outR outC] = size(trainTargets);
 outputRows = outR;
@@ -56,10 +56,10 @@ end
 %target = (1 + sin(pi/4))
 alpha = learningRate;
 mseIter = 1; %just a start value for the while loop 
-iters = 0; %iteration counter 
-mseValues = zeros(iterations);
+iters = 1; %iteration counter 
+mseValues = zeros(iterations, 1);
 
-while( mseIter > 0.00001 && iters < iterations)
+while( mseIter > 0.005 && iters < iterations + 1)
     mseIter = 0;
     for passes = 1:cols
         input = trainInputs(:,passes);
@@ -119,9 +119,9 @@ while( mseIter > 0.00001 && iters < iterations)
         
         
     end
+    mseIter = mseIter/outC; % get the average for the epoch
+    mseValues(iters, 1) = mseIter; % save it to output array 
     iters = iters + 1;
-    mseValues(iters) = mseIter;
-    disp(mseIter);
 end
 
 end
