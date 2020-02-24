@@ -12,7 +12,7 @@ function [W1, b1, W2, b2] = backProp(trainInputs, trainTargets, learningRate, it
 %   layer1 function: logsigmoid()
 %   layer2 function: linear() 
 
-hiddenLayer = 7;
+hiddenLayer = 50;
 
 [outR outC] = size(trainTargets);
 outputRows = outR;
@@ -55,8 +55,8 @@ end
 %input = 1;
 %target = (1 + sin(pi/4))
 alpha = learningRate;
-MSE = 1;
-iters = 0;
+MSE = 1; %just a start value for the while loop 
+iters = 0; %iteration counter 
 while( MSE > 0 && iters < iterations)
     for passes = 1:cols
         input = trainInputs(:,passes);
