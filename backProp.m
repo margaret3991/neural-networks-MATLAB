@@ -20,7 +20,7 @@ function [W1, b1, W2, b2, mseValues] = backProp(trainInputs, trainTargets, learn
 %   mseValues = vector of average MSE for each epoch 
 
 % HIDDEN LAYER SIZE HARDCODED HERE 
-hiddenLayer = 3;
+hiddenLayer = 20;
 
 % get size of target space to determine output layer size 
 [outR outC] = size(trainTargets);
@@ -44,7 +44,7 @@ W2 = zeros(outputRows, w1r);
 b2 = rand(outputRows, 1);
 
 for m = 1:outputRows
-    for n = 1:outputRows
+    for n = 1:w1r
         W2(m,n) = rand(1)/10;
         %b2(m) = rand(1)/10;
     end
@@ -57,7 +57,7 @@ iters = 1;      %iteration counter
 mseValues = zeros(iterations, 1);   %initialize MSE vector 
 
 % outside loop controls the training iterations 
-while( mseIter > 0.001 && iters < iterations + 1)
+while( mseIter > 0.0005 && iters < iterations + 1)
     
     mseIter = 0; % cumulative MSE variable for training iteration
     

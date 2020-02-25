@@ -1,18 +1,26 @@
 function [W1, b1, W2, b2, mseValues] = backProp(trainInputs, trainTargets, learningRate, iterations, architecture)
 %   ------- BACKPROPAGATION FUNCTION -------
 %   
+%   INPUTS:
 %   trainInputs = input vector for training set 
 %   trainTargets = target vector for training set
 %   learning rate = alpha learning rate 
 %   iterations = set value for maximum iterations 
 %   architecture = parameter not implemented (for different architectures)
 
-%   transfer function definitions:
+%   transfer function definitions (HARDCODED):
 %   layer1 function: logsigmoid()
 %   layer2 function: logsigmoid()
 
+%   OUTPUTS:
+%   W1 = updated weight matrix for layer 1
+%   b1 = updated bias vector for layer 1
+%   W2 = updated weight matrix for layer 2
+%   b2 = updated bias vector for layer 2
+%   mseValues = vector of average MSE for each epoch 
+
 % HIDDEN LAYER SIZE HARDCODED HERE 
-hiddenLayer = 15;
+hiddenLayer = 18;
 
 % get size of target space to determine output layer size 
 [outR outC] = size(trainTargets);
@@ -49,7 +57,7 @@ iters = 1;      %iteration counter
 mseValues = zeros(iterations, 1);   %initialize MSE vector 
 
 % outside loop controls the training iterations 
-while( mseIter > 0.001 && iters < iterations + 1)
+while( mseIter > 0.0005 && iters < iterations + 1)
     
     mseIter = 0; % cumulative MSE variable for training iteration
     

@@ -18,7 +18,7 @@ outputV = zeros(1, Tcols);
 
 for i = 1:Icols
     interm = zeros(Trows, 1);
-    interm = logSig2Layer(inputV(:, i), W1, b1, W2, b2)
+    interm = logSig2Layer(inputV(:, i), W1, b1, W2, b2);
     outputV(1,i) = evaluateOutput(interm);
 end
 end
