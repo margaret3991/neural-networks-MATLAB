@@ -1,4 +1,4 @@
-function [W1, b1, W2, b2, mseValues] = backPropMiniBatch(trainInputs, trainTargets, learningRate, iterations, batchFrac)
+function [W1, b1, W2, b2, mseValues] = backPropMiniBatch(trainInputs, trainTargets, learningRate, iterations, batchFraction)
 %   ------- BACKPROPAGATION FUNCTION -------
 %   
 %   INPUTS:
@@ -6,8 +6,8 @@ function [W1, b1, W2, b2, mseValues] = backPropMiniBatch(trainInputs, trainTarge
 %   trainTargets = target vector for training set
 %   learning rate = alpha learning rate 
 %   iterations = set value for maximum iterations 
-%   batchFrac = fraction for making the mini-batches  
-%       Ex batchFrac = 10 means batch size will be 1/10 of training set 
+%   batchFraction = fraction for making the mini-batches  
+%       Ex batchFraction = 10 means batch size will be 1/10 of training set 
 
 %   transfer function definitions (HARDCODED):
 %   layer1 function: logsigmoid()
@@ -21,13 +21,13 @@ function [W1, b1, W2, b2, mseValues] = backPropMiniBatch(trainInputs, trainTarge
 %   mseValues = vector of average MSE for each epoch 
 
 % HIDDEN LAYER SIZE HARDCODED HERE 
-hiddenLayer = 20;
+hiddenLayer = 15;
 
 % get size of target space to determine output layer size 
 [targR, targC] = size(trainTargets);
 outputRows = targR;
 
-batchSize = targC/batchFrac;
+batchSize = targC/batchFraction;
 
 %   Initial Weights and Biases created using small random values  
 [trainRows, trainCols] = size(trainInputs);
@@ -64,15 +64,19 @@ while( mseIter > 0.0005 && iters < iterations + 1)
     
     mseIter = 0; % cumulative MSE variable for training iteration
     
-    for batch = 1:batchFrac
+    for batch = 1:batchFraction
         % insert batch code here
         
+        accS1 = zeros(hiddenLayer, 1);
+        accS2 = zeros(outputRows, 1);
+        F2n2 = zeros(outputRows, outputRows);
+        F1n1 = zeros(hiddenLayer, hiddenLayer);
         for batchPass = (1 + ((batch - 1) * batchSize)):((batch) * (batchSize))
-             % inner batch loop
-             
+            % inner batch loop
+            % disp(batchPass) 
             % get input and target from their matrices 
-            input = trainInputs(:,passes);
-            target = trainTargets(:,passes);
+            input = trainInputs(:, batchPass);
+            target = trainTargets(:, batchPass);
 
             %------ Now Propagate Forwards ------%
             a1 = logSigmoid((W1 * input) + b1);
@@ -85,7 +89,7 @@ while( mseIter > 0.0005 && iters < iterations + 1)
             %------ Now Calculate Sensitivities and Backpropagate ------%
 
             % create and populate the f2(n2) derivative matrix 
-            F2n2 = zeros(outputRows, outputRows);
+            
             for i = 1:outputRows
                 for j = 1:outputRows
                     if i == j
@@ -96,9 +100,10 @@ while( mseIter > 0.0005 && iters < iterations + 1)
 
             % calculate first sensitivity s^M
             s2 = -2 * F2n2 * error;  % creates vector sized outputRows x 1
-
+            accS2 = accS2 + s2;
+            
             % create and populate the f1(n1) derivative matrix
-            F1n1 = zeros(hiddenLayer, hiddenLayer);
+            
             [f1rows f1cols] = size(F1n1);
             for i = 1:f1rows
                 for j = 1:f1cols
@@ -110,16 +115,17 @@ while( mseIter > 0.0005 && iters < iterations + 1)
 
             % calculate next layer's sensitivity s^M-1
             s1 = F1n1 * W2' * s2; %creates vector hiddenLayer x 1 sized 
+            accS1 = accS1 + s1
         end
         
         
-        %------ Update Weights and Biases ------%
+        %------ Update Weights and Biases after each Batch ------%
 
-        W2 = W2 - (alpha * s2 * a1');
-        b2 = b2 - (alpha * s2);
+        W2 = W2 - (alpha * accS2 * a1');
+        b2 = b2 - (alpha * accS2);
 
-        W1 = W1 - (alpha * s1 * input');
-        b1 = b1 - (alpha * s1);
+        W1 = W1 - (alpha * accS1 * input');
+        b1 = b1 - (alpha * accS1);
         
     end
 

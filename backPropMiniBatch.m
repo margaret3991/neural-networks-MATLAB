@@ -21,7 +21,7 @@ function [W1, b1, W2, b2, mseValues] = backPropMiniBatch(trainInputs, trainTarge
 %   mseValues = vector of average MSE for each epoch 
 
 % HIDDEN LAYER SIZE HARDCODED HERE 
-hiddenLayer = 20;
+hiddenLayer = 10;
 
 % get size of target space to determine output layer size 
 [targR, targC] = size(trainTargets);
@@ -69,13 +69,16 @@ while( mseIter > 0.0005 && iters < iterations + 1)
         
         accS1 = zeros(hiddenLayer, 1);
         accS2 = zeros(outputRows, 1);
-        
+        accInputs = zeros(trainRows, 1);
+        accA1 = zeros(hiddenLayer, 1);
+        F2n2 = zeros(outputRows, outputRows);
+        F1n1 = zeros(hiddenLayer, hiddenLayer);
         for batchPass = (1 + ((batch - 1) * batchSize)):((batch) * (batchSize))
             % inner batch loop
-             
+            % disp(batchPass) 
             % get input and target from their matrices 
-            input = trainInputs(:,passes);
-            target = trainTargets(:,passes);
+            input = trainInputs(:, batchPass);
+            target = trainTargets(:, batchPass);
 
             %------ Now Propagate Forwards ------%
             a1 = logSigmoid((W1 * input) + b1);
@@ -88,7 +91,7 @@ while( mseIter > 0.0005 && iters < iterations + 1)
             %------ Now Calculate Sensitivities and Backpropagate ------%
 
             % create and populate the f2(n2) derivative matrix 
-            F2n2 = zeros(outputRows, outputRows);
+            
             for i = 1:outputRows
                 for j = 1:outputRows
                     if i == j
@@ -102,7 +105,7 @@ while( mseIter > 0.0005 && iters < iterations + 1)
             accS2 = accS2 + s2;
             
             % create and populate the f1(n1) derivative matrix
-            F1n1 = zeros(hiddenLayer, hiddenLayer);
+            
             [f1rows f1cols] = size(F1n1);
             for i = 1:f1rows
                 for j = 1:f1cols
@@ -114,16 +117,21 @@ while( mseIter > 0.0005 && iters < iterations + 1)
 
             % calculate next layer's sensitivity s^M-1
             s1 = F1n1 * W2' * s2; %creates vector hiddenLayer x 1 sized 
-            accS1 = accS1 + s1;
+            accS1 = accS1 + s1
+            
+            % accumulate the inputs and a1 (first layer output) for 
+            % the batch updates 
+            accInputs = accInputs + input;
+            accA1 = accA1 + a1;
         end
         
         
         %------ Update Weights and Biases after each Batch ------%
 
-        W2 = W2 - (alpha * accS2 * a1');
+        W2 = W2 - (alpha * accS2 * accA1');
         b2 = b2 - (alpha * accS2);
 
-        W1 = W1 - (alpha * accS1 * input');
+        W1 = W1 - (alpha * accS1 * accInputs');
         b1 = b1 - (alpha * accS1);
         
     end

@@ -22,7 +22,7 @@ function [W1, b1, W2, b2, W3, b3, mseValues] = backProp3Layer(trainInputs, train
 %   mseValues = vector of average MSE for each epoch 
 
 % HIDDEN LAYER SIZE HARDCODED HERE 
-hiddenLayer1 = 10;
+hiddenLayer1 = 15;
 hiddenLayer2 = 10;
 
 % get size of target space to determine output layer size 
@@ -47,7 +47,7 @@ W2 = zeros(hiddenLayer2, hiddenLayer1);
 b2 = rand(hiddenLayer2, 1);
 
 for m = 1:hiddenLayer2
-    for n = 1:trainRows
+    for n = 1:hiddenLayer1
         W2(m,n) = rand(1)/10;
         %b2(m) = rand(1)/10;
     end
@@ -85,7 +85,7 @@ while( mseIter > 0.0005 && iters < iterations + 1)
         
         %------ Now Propagate Forwards ------%
         a1 = logSigmoid((W1 * input) + b1);
-       
+
         a2 = logSigmoid((W2 * a1) + b2);
         
         a3 = logSigmoid((W3 * a2) + b3);
