@@ -1,4 +1,4 @@
-function [W1, b1, W2, b2, mseValues] = backProp(trainInputs, trainTargets, learningRate, iterations, architecture)
+function [W1, b1, W2, b2, mseValues] = backPropMiniBatch(trainInputs, trainTargets, learningRate, iterations, batchFrac)
 %   ------- BACKPROPAGATION FUNCTION -------
 %   
 %   INPUTS:
@@ -6,7 +6,8 @@ function [W1, b1, W2, b2, mseValues] = backProp(trainInputs, trainTargets, learn
 %   trainTargets = target vector for training set
 %   learning rate = alpha learning rate 
 %   iterations = set value for maximum iterations 
-%   architecture = parameter not implemented (for different architectures)
+%   batchFrac = fraction for making the mini-batches  
+%       Ex batchFrac = 10 means batch size will be 1/10 of training set 
 
 %   transfer function definitions (HARDCODED):
 %   layer1 function: logsigmoid()
@@ -25,6 +26,8 @@ hiddenLayer = 20;
 % get size of target space to determine output layer size 
 [targR, targC] = size(trainTargets);
 outputRows = targR;
+
+batchSize = targC/batchFrac;
 
 %   Initial Weights and Biases created using small random values  
 [trainRows, trainCols] = size(trainInputs);
@@ -61,50 +64,55 @@ while( mseIter > 0.0005 && iters < iterations + 1)
     
     mseIter = 0; % cumulative MSE variable for training iteration
     
-    % for each input and target in the training sets:
-    for passes = 1:trainCols 
+    for batch = 1:batchFrac
+        % insert batch code here
         
-        % get input and target from their matrices 
-        input = trainInputs(:,passes);
-        target = trainTargets(:,passes);
-        
-        %------ Now Propagate Forwards ------%
-        a1 = logSigmoid((W1 * input) + b1);
-       
-        a2 = logSigmoid((W2 * a1) + b2);
+        for batchPass = (1 + ((batch - 1) * batchSize)):((batch) * (batchSize))
+             % inner batch loop
+             
+            % get input and target from their matrices 
+            input = trainInputs(:,passes);
+            target = trainTargets(:,passes);
 
-        error = target - a2; % error vector 
-        mseIter = mseIter + mse(target, a2); % add this pair's MSE
-        
-        %------ Now Calculate Sensitivities and Backpropagate ------%
-        
-        % create and populate the f2(n2) derivative matrix 
-        F2n2 = zeros(outputRows, outputRows);
-        for i = 1:outputRows
-            for j = 1:outputRows
-                if i == j
-                    F2n2(i,j) = (1 - a2(i,1))*(a2(i,1));
+            %------ Now Propagate Forwards ------%
+            a1 = logSigmoid((W1 * input) + b1);
+
+            a2 = logSigmoid((W2 * a1) + b2);
+
+            error = target - a2; % error vector 
+            mseIter = mseIter + mse(target, a2); % add this pair's MSE
+
+            %------ Now Calculate Sensitivities and Backpropagate ------%
+
+            % create and populate the f2(n2) derivative matrix 
+            F2n2 = zeros(outputRows, outputRows);
+            for i = 1:outputRows
+                for j = 1:outputRows
+                    if i == j
+                        F2n2(i,j) = (1 - a2(i,1))*(a2(i,1));
+                    end
                 end
             end
-        end
 
-        % calculate first sensitivity s^M
-        s2 = -2 * F2n2 * error;  % creates vector sized outputRows x 1
-        
-        % create and populate the f1(n1) derivative matrix
-        F1n1 = zeros(hiddenLayer, hiddenLayer);
-        [f1rows f1cols] = size(F1n1);
-        for i = 1:f1rows
-            for j = 1:f1cols
-                if i == j
-                    F1n1(i,j) = (1 - a1(i,1))*(a1(i,1));
+            % calculate first sensitivity s^M
+            s2 = -2 * F2n2 * error;  % creates vector sized outputRows x 1
+
+            % create and populate the f1(n1) derivative matrix
+            F1n1 = zeros(hiddenLayer, hiddenLayer);
+            [f1rows f1cols] = size(F1n1);
+            for i = 1:f1rows
+                for j = 1:f1cols
+                    if i == j
+                        F1n1(i,j) = (1 - a1(i,1))*(a1(i,1));
+                    end
                 end
             end
+
+            % calculate next layer's sensitivity s^M-1
+            s1 = F1n1 * W2' * s2; %creates vector hiddenLayer x 1 sized 
         end
         
-        % calculate next layer's sensitivity s^M-1
-        s1 = F1n1 * W2' * s2; %creates vector hiddenLayer x 1 sized 
-
+        
         %------ Update Weights and Biases ------%
 
         W2 = W2 - (alpha * s2 * a1');
@@ -112,11 +120,12 @@ while( mseIter > 0.0005 && iters < iterations + 1)
 
         W1 = W1 - (alpha * s1 * input');
         b1 = b1 - (alpha * s1);
+        
     end
+
     mseIter = mseIter/targC; % get the average for the epoch
     mseValues(iters, 1) = mseIter; % save it to output array 
     iters = iters + 1; % update iters for while loop control 
 end
 
 end
-

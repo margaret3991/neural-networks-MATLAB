@@ -17,6 +17,8 @@ function [W1, b1, W2, b2, W3, b3, mseValues] = backProp3Layer(trainInputs, train
 %   b1 = updated bias vector for layer 1
 %   W2 = updated weight matrix for layer 2
 %   b2 = updated bias vector for layer 2
+%   W3 = updated weight matrix for layer 3
+%   b3 = updated bias vector for layer 3 
 %   mseValues = vector of average MSE for each epoch 
 
 % HIDDEN LAYER SIZE HARDCODED HERE 
@@ -39,7 +41,7 @@ for m = 1:hiddenLayer1
     end
 end
 
-% ---- Layer 2 FIX W2 SIZE ----- %
+% ---- Layer 2 ----- %
 %[w1rows w1cols] = size(W1);
 W2 = zeros(hiddenLayer2, hiddenLayer1);
 b2 = rand(hiddenLayer2, 1);
