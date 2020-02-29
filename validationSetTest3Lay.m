@@ -10,6 +10,8 @@ function [outputV] = validationSetTest3Lay(inputV,labels, W1, b1, W2, b2, W3, b3
 %   b1 = bias vector for the first layer 
 %   W2 = weight matrix for second layer of the network
 %   b2 = bias vector for the second layer 
+%   W3 = weight matrix for third layer
+%   b3 = bias vector for third layer 
 %   OUTPUTS:
 %   outputV = vector of output labels created by the network 
 [Irows, Icols] = size(inputV);

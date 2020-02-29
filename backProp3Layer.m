@@ -22,7 +22,7 @@ function [W1, b1, W2, b2, W3, b3, mseValues] = backProp3Layer(trainInputs, train
 %   mseValues = vector of average MSE for each epoch 
 
 % HIDDEN LAYER SIZE HARDCODED HERE 
-hiddenLayer1 = 15;
+hiddenLayer1 = 20;
 hiddenLayer2 = 10;
 
 % get size of target space to determine output layer size 
